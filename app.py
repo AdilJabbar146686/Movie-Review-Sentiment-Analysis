@@ -6,8 +6,8 @@ import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 
-nltk.download('punkt')
-nltk.download('stopwords')
+# Use local nltk_data directory (to avoid download issues on Streamlit Cloud)
+nltk.data.path.append('./nltk_data')
 
 # Load model and vectorizer
 with open("sentiment_model.pkl", "rb") as f:
@@ -16,12 +16,13 @@ with open("sentiment_model.pkl", "rb") as f:
 with open("tfidf_vectorizer.pkl", "rb") as f:
     vectorizer = pickle.load(f)
 
+# Preprocessing function
 stop_words = set(stopwords.words('english'))
 
 def preprocess_text(text):
     text = text.lower()
-    text = re.sub(r'<.*?>', '', text)
-    text = text.translate(str.maketrans('', '', string.punctuation))
+    text = re.sub(r'<.*?>', '', text)  # Remove HTML
+    text = text.translate(str.maketrans('', '', string.punctuation))  # Remove punctuation
     tokens = word_tokenize(text)
     tokens = [word for word in tokens if word not in stop_words]
     return ' '.join(tokens)
